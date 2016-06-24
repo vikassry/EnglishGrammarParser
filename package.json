@@ -1,0 +1,19 @@
+{
+  "name": "paser_assignments",
+  "version": "0.0.1",
+  "description": "new Language Assignments",
+  "main": "grammar.js",
+  "scripts": {
+    "test": "run tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/vikassry/parserAssignments.git"
+  },
+  "author": "vikas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vikassry/parserAssignments/issues"
+  },
+  "homepage": "https://github.com/vikassry/parserAssignments#readme"
+}
