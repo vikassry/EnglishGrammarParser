@@ -34,11 +34,11 @@ function addVerb(oldSubject, newSubject){
 %%
 
 \s+                               /* skip whitespace */
-ram|sita                                     return 'NOUN'
-likes|hates                             return 'VERB'
-tea|coffee|butter|cheese                return 'OBJECT'
-<<EOF>>                                 return 'EOF'
-'.'                                     return 'DOT'
+ram|sita                                        return 'NAME'
+likes|hates                                     return 'VERB'
+tea|coffee|butter|cheese|biscuits|sita          return 'THING'
+<<EOF>>                                         return 'EOF'
+'.'                                             return 'DOT'
 
 /lex
 
@@ -49,24 +49,17 @@ tea|coffee|butter|cheese                return 'OBJECT'
 /* language grammar */
 
 expressions
-    : e EOF
-        {
-          console.log($$)
-          return $$; }
-    ;
+    : e EOF { return $$; };
 
 e
     : e SENTENCE
-      {
-        $$ = addVerb($1,$2);
-      }
+      { $$ = addVerb($1,$2); }
     | SENTENCE
-      {$$ = $1
-      }
+      { $$ = $1; }
     ;
 
 SENTENCE
-    : SUBJECT VERB OBJECT DOT
+    : NAME VERB OBJECT DOT
       {
         var subject = {};
         subject[$1]={};
@@ -75,5 +68,4 @@ SENTENCE
       }
     ;
 
-SUBJECT : NOUN {
-  };
+OBJECT : THING | NAME ;
