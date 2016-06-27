@@ -5,31 +5,29 @@
 %{
 
 var hasName = function(oldSubject, newSubject){
-    return oldSubject[Object.keys(newSubject)[0]] != undefined;
-}
-var hasVerb = function(oldSubject, newSubject){
-    var old_name = oldSubject[Object.keys(newSubject)[0]]
-    var new_name = newSubject[Object.keys(newSubject)[0]]
-    return old_name[Object.keys(new_name)[0]] != undefined;
-}
+    return oldSubject[Object.keys(newSubject)[0]];
+};
 
+var first_key = function(old_name){
+    return Object.keys(old_name)[0];
+};
 
 function addVerb(oldSubject, newSubject){
-  console.log(oldSubject, ' ------- ', newSubject);
     if(hasName(oldSubject, newSubject)){
-        if(hasVerb(oldSubject, newSubject)){
-          oldSubject['VERB'][newSubject.VERB].push(newSubject.VERB);
-        }
-        else{
-          oldSubject.VERB[newSubject.VERB] = [newSubject.VERB];
-        }
+        var old_name = oldSubject[first_key(newSubject)];
+        var new_name = newSubject[first_key(newSubject)];
+        if(hasName(old_name, new_name))
+            old_name[first_key(new_name)].push(new_name[first_key(new_name)][0]);
+        else
+            old_name[first_key(new_name)] = new_name[first_key(new_name)];
         return oldSubject;
     }
-    oldSubject[newSubject.SUB] = {};
-    oldSubject[newSubject.SUB]['VERB']= newSubject.VERB;
+    oldSubject[first_key(newSubject)] = newSubject[first_key(newSubject)];
     return oldSubject;
-  }
+};
+
 %}
+
 
 /* lexical grammar */
 %lex
@@ -52,7 +50,9 @@ tea|coffee|butter|cheese                return 'OBJECT'
 
 expressions
     : e EOF
-        { return $$; }
+        {
+          console.log($$)
+          return $$; }
     ;
 
 e
@@ -70,11 +70,10 @@ SENTENCE
       {
         var subject = {};
         subject[$1]={};
-        subject[$1][$2] = $3;
+        subject[$1][$2] = [$3];
         $$ = subject;
       }
     ;
 
 SUBJECT : NOUN {
-
   };
