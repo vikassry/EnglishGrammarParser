@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/vikassry/parserAssignments/issues"
   },
-  "homepage": "https://github.com/vikassry/parserAssignments#readme"
+  "homepage": "https://github.com/vikassry/parserAssignments#readme",
+  "dependencies": {
+    "lodash": "^4.13.1"
+  }
 }
