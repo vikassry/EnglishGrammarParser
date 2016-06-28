@@ -8,21 +8,22 @@ var hasName = function(oldSubject, newSubject){
     return oldSubject[Object.keys(newSubject)[0]];
 };
 
-var first_key = function(old_name){
+var firstKey = function(old_name){
     return Object.keys(old_name)[0];
 };
 
 function addVerb(oldSubject, newSubject){
     if(hasName(oldSubject, newSubject)){
-        var old_name = oldSubject[first_key(newSubject)];
-        var new_name = newSubject[first_key(newSubject)];
-        if(hasName(old_name, new_name))
-            old_name[first_key(new_name)].push(new_name[first_key(new_name)][0]);
+        var old_name = oldSubject[firstKey(newSubject)];
+        var new_name = newSubject[firstKey(newSubject)];
+        if(hasName(old_name, new_name)){
+          old_name[firstKey(new_name)].push(new_name[firstKey(new_name)][0]);
+        }
         else
-            old_name[first_key(new_name)] = new_name[first_key(new_name)];
+            old_name[firstKey(new_name)] = new_name[firstKey(new_name)];
         return oldSubject;
     }
-    oldSubject[first_key(newSubject)] = newSubject[first_key(newSubject)];
+    oldSubject[firstKey(newSubject)] = newSubject[firstKey(newSubject)];
     return oldSubject;
 };
 
@@ -33,10 +34,11 @@ function addVerb(oldSubject, newSubject){
 %lex
 %%
 
-\s+                               /* skip whitespace */
+\s+                                             /* skip whitespace */
 ram|sita                                        return 'NAME'
 likes|hates                                     return 'VERB'
-tea|coffee|butter|cheese|biscuits|sita          return 'THING'
+also                                            return 'ADVERB'
+tea|coffee|butter|cheese|biscuits               return 'THING'
 <<EOF>>                                         return 'EOF'
 '.'                                             return 'DOT'
 
@@ -53,19 +55,23 @@ expressions
 
 e
     : e SENTENCE
-      { $$ = addVerb($1,$2); }
+    { $$ = addVerb($1,$2); }
     | SENTENCE
       { $$ = $1; }
     ;
 
 SENTENCE
-    : NAME VERB OBJECT DOT
+    : NAME VERB_PHRASE OBJECT DOT
       {
         var subject = {};
         subject[$1]={};
-        subject[$1][$2] = [$3];
+        subject[$1][$2[0]] = [{ OBJECT: $3}];
+        if ($2.length == 2)
+          subject[$1][$2[0]][0]['ADVERB'] = $2[1];
         $$ = subject;
       }
     ;
+
+VERB_PHRASE : VERB { $$ = [$1] } | ADVERB VERB { $$ = [$2,$1] };
 
 OBJECT : THING | NAME ;
