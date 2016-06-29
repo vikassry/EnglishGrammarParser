@@ -2,33 +2,6 @@
 /* description: Parses and executes english grammar sentences. */
 
 
-%{
-
-var hasName = function(oldSubject, newSubject){
-    return oldSubject[Object.keys(newSubject)[0]];
-};
-
-var firstKey = function(old_name){
-    return Object.keys(old_name)[0];
-};
-
-var addVerb = function (oldSubject, newSubject){
-    if(hasName(oldSubject, newSubject)){
-        var old_name = oldSubject[firstKey(newSubject)];
-        var new_name = newSubject[firstKey(newSubject)];
-        if(hasName(old_name, new_name))
-            old_name[firstKey(new_name)].push(new_name[firstKey(new_name)][0]);
-        else
-            old_name[firstKey(new_name)] = new_name[firstKey(new_name)];
-        return oldSubject;
-    }
-    oldSubject[firstKey(newSubject)] = newSubject[firstKey(newSubject)];
-    return oldSubject;
-};
-
-%}
-
-
 /* lexical grammar */
 %lex
 %%
@@ -54,7 +27,10 @@ expressions
 
 e
     : e SENTENCE
-    { $$ = addVerb($1,$2); }
+    {
+      var addChoice = require('./treeConstructor.js')
+      $$ = addChoice($1,$2);
+    }
 
     | SENTENCE
     { $$ = $1; }
@@ -65,9 +41,8 @@ SENTENCE
       {
         var subject = {};
         subject[$1]={};
-        subject[$1][$2[0]] = [{ OBJECT: $3}];
-        if ($2.length == 2)
-            subject[$1][$2[0]][0]['ADVERB'] = $2[1];
+        subject[$1][$2[0]] = [ {CHOICE: $3} ];
+        ($2.length == 2) && (subject[$1][$2[0]][0].ADVERB = $2[1]);
         $$ = subject;
       };
 

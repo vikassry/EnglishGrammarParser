@@ -1,25 +1,25 @@
 var parser = require('./grammar.js').parser;
 var fs = require('fs');
+var _ = require('lodash');
 
 var inputText = fs.readFileSync('./test_data').toString();
 var parsedTree = parser.parse(inputText);
 
-var getNames = function(wordObjects){
+var getChoices = function(wordObjects){
     return wordObjects.map(function(word){
-        return word.OBJECT;
+        return word.CHOICE;
     });
 }
 
-var makePhrase = function(words, index){
-    if(index >= words.length-2 && index<words.length)
-        return getNames(words.slice(index)).join(' and ');
-    return words[index].OBJECT +', '+ makePhrase(words, index+1);
+var makePhrase = function(words){
+    if(words.length <= 2) return getChoices(words).join(' and ');
+    return _.head(words).CHOICE +', '+ makePhrase(_.tail(words));
 };
 
 var checkSemanticsForAdverb = function(name, verb, objects){
   var also = objects[0]['ADVERB'];
   if (also)
-      throw 'SEMANTIC ERROR\n' + [name, also, verb, objects[0].OBJECT,
+      throw 'SEMANTIC ERROR\n' + [name, also, verb, objects[0].CHOICE,
       '<-', also, 'appeared before context.'].join(' ');
 };
 
